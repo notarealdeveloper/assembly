@@ -1,0 +1,44 @@
+Getting a password from the binary of a *very* sloppily-made application.
+Just for fun, to illustrate some simple techniques.
+
+# objdump -d c | grep -B 5 strcmp
+
+    4006d9:	48 89 c7             	mov    %rax,%rdi
+    4006dc:	e8 95 ff ff ff       	callq  400676 <getstr>
+    4006e1:	48 8b 45 f8          	mov    -0x8(%rbp),%rax
+    4006e5:	be cc 07 40 00       	mov    $0x4007cc,%esi
+    4006ea:	48 89 c7             	mov    %rax,%rdi
+    4006ed:	e8 4e fe ff ff       	callq  400540 <strcmp@plt>
+
+The Address 0x4007cc is compared to whatever the previous callq returned
+Let's go see what's there.
+
+# objdump -D c | grep -C 1 4007c.:
+We find:
+
+    4007ba:	73 65                	jae    400821 <_IO_stdin_used+0x71>
+    4007bc:	63 72 65             	movslq 0x65(%rdx),%esi
+    4007bf:	74 20                	je     4007e1 <_IO_stdin_used+0x31>
+    4007c1:	70 61                	jo     400824 <_IO_stdin_used+0x74>
+    4007c3:	73 73                	jae    400838 <_IO_stdin_used+0x88>
+    4007c5:	77 6f                	ja     400836 <_IO_stdin_used+0x86>
+    4007c7:	72 64                	jb     40082d <_IO_stdin_used+0x7d>
+    4007c9:	3a 20                	cmp    (%rax),%ah
+--> 4007cb:	00 66 61             	add    %ah,0x61(%rsi)
+    4007ce:	70 63                	jo     400833 <_IO_stdin_used+0x83>
+    4007d0:	61                   	(bad)  
+--x 4007d1:	6b 65 73 00          	imul   $0x0,0x73(%rbp),%esp
+
+Our address of interest (4007cc) begins at the 66.
+If this is a password, it will continue until the next null byte.
+So the string 66 61 70 63 61 6b 65 73 seems to be of interest.
+Also, it's got a "(bad)" instruction in it, which most likely means this is just text,
+and the disassembler is getting confused when it tries to interpret it as machine instructions.
+Let's open-up python and see what the hex translates to.
+
+>>> str('\x66\x61\x70\x63\x61\x6b\x65\x73')
+'fapcakes'
+
+Hooray!
+
+:D

@@ -1,0 +1,16 @@
+$ nasm -v && ndisasm -v
+NASM version 2.11.05 compiled on May 31 2014
+NDISASM version 2.11.05 compiled on May 31 2014
+
+$ echo 'mov word [edi], ax' > nasm.asm && nasm -f bin -o nasm.bin nasm.asm && ndisasm nasm.bin
+00000000  678907            mov [edi],ax
+
+$ echo -e 'USE16\nmov word [edi], ax' > nasm.asm && nasm -f bin -o nasm.bin nasm.asm && ndisasm nasm.bin
+00000000  678907            mov [edi],ax
+
+$ echo -e 'USE64\nmov word [edi], ax' > nasm.asm && nasm -f bin -o nasm.bin nasm.asm && ndisasm nasm.bin
+00000000  66678907          mov [edi],eax
+
+$ echo -e 'USE32\nmov word [edi], ax' > nasm.asm && nasm -f bin -o nasm.bin nasm.asm && ndisasm nasm.bin
+00000000  668907            mov [bx],eax
+

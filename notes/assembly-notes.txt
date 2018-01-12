@@ -1,0 +1,81 @@
+# The x86 architecture has:
+#  8 General-Purpose Registers (GPR), 
+#  6 Segment Registers, 
+#  1 Flags Register (EFLAGS) 
+#  1 Instruction Pointer.
+
+# ADDRESSING MODES
+# Full example: load *(ebp - 4 + (edx * 4)) into eax
+movl  -4(%ebp, %edx, 4), %eax
+# Typical example: load a stack variable into eax
+movl  -4(%ebp), %eax
+# No offset: copy the target of a pointer into a register
+movl  (%ecx), %edx
+# Arithmetic: multiply eax by 4 and add 8
+leal  8(,%eax,4), %eax
+# Arithmetic: multiply eax by 2 and add eax (i.e. multiply by 3)
+leal  (%eax,%eax,2), %eax
+
+# REGISTER CONVENTIONS
+# How the registers are used
+
+%eax    # stores function return values
+%ebx    # base pointer to data section (not super common)
+%eax    # counter for string and loop operations
+%eax    # i/o pointer (not super common)
+
+%esi    # source pointer for string operations
+%edi    # destin pointer for string operations
+%esp    # stack pointer: points to top of stack
+%ebp    # base pointer: points to the "origin" (current stack frame)
+
+%eip    # points to the next instruction the cpu will execute (special)
+
+# REGISTER CONVENTIONS
+# How functions agree not to destroy each other's registers
+
+# Caller-save registers: eax, ecx, edx
+#  main wants to call a function. 
+#  it assumes that this function might fuck with eax, ecx, edx.
+#  so it caller is responsible for saving (pushing) them pre-call
+
+# Callee-save registers: ebx, ebp, esi, edi
+#  the callee must be a good citizen and not modify registers 
+#  that the caller didn't save, unless the callee itself saves
+#  and restores their existing values. this is the push %ebx business.
+
+# SUBSETS OF REGISTERS
+# Instruction suffixes for 8, 16, 32, and 64 bit registers
+movb    $5,     %al         # 08 bit move into 08 bit register
+movw    $5,     %ax         # 16 bit move into 16 bit register
+movl    $5,     %eax        # 32 bit move into 32 bit register
+movq    $5,     %rax        # 64 bit move into 64 bit register
+
+# These registers have 16 bit subsets, but can't go to 8 bit level
+%sp is lower half of %esp
+%bp is lower half of %ebp
+%si is lower half of %esi
+%di is lower half of %edi
+%ip is lower half of %eip
+
+# The EFLAGS register holds lots of single bit flags.
+# Zero flag (ZF): Set if result of previous instruction is zero.
+# Sign flag (ZF): Set to most significant bit of the result.
+
+# Positiveness or negativeness is in the eye of the code.
+# To the hardware, you're just adding bits.
+
+# NOP: no operation, no registers, no values, no nothin!
+#  just there to pad/align bytes, or to delay time
+#  hackers use it to make simple exploits more reliable (nop sled)
+#  the one byte nop instruction is an alias mnemonic for the
+#  xchg %eax %eax instruction
+
+# THE STACK
+#  The stack is a conceptual area of main memory (RAM) 
+#  which is designated by the OS when a program is started.
+#  Different OSs start at different addresses by convention
+#  By convention, on x86, the stack grows toward lower memory addresses.
+#  %esp points to the top of the stack: the lowest address yet used!
+
+

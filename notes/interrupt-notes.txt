@@ -1,0 +1,27 @@
+# Interrupts: http://en.wikipedia.org/wiki/Interrupt_request
+# Interrupt handler: http://en.wikipedia.org/wiki/Interrupt_handler
+# Polling: http://en.wikipedia.org/wiki/Polling_(computer_science)
+# Preemption: http://en.wikipedia.org/wiki/Preemption_(computing)
+# BIOS interrupts: http://en.wikipedia.org/wiki/BIOS_interrupt_call
+
+# IRQ = Interrupt request
+# An interrupt request (or IRQ) is a hardware signal sent to the processor 
+# that temporarily stops a running program and allows a special program, 
+# an interrupt handler, to run instead. Interrupts are used to handle such 
+# events as data receipt from a modem or network, or a key press or mouse 
+# movement. 
+
+# Interrupt request level = IRQL 
+# The priority of an interrupt request.
+
+# Interrupt handlers:
+# (1) FLIH = First-Level Interrupt Handler. Very fast.
+# (2) SLIH = Second-Level Interrupt Handler. "Deferred Procedure Call"
+#
+# Masking:
+# FLIHs which service hardware typically mask their associated interrupt
+# (or possibly just keep it masked) until they complete their execution.
+# I guess this prevents neverending preemption -> stack overflow -> death.
+
+# On Linux, IRQ mappings can be viewed with:
+cat /proc/interrupts

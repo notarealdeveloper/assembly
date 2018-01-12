@@ -1,0 +1,4 @@
+#!/bin/bash
+
+f="arm-assembly-brief-notes"
+rm -f "$f" && gcc -o "$f"{,.s} && ./"$f"; echo "$?"
